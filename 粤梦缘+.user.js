@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    dranime
-// @version      1.0
+// @version      1.1
 // @description  水水沒煩惱
 // @include      /^https://(bbs|www)\.(deainx|dotmu|dranime)\.(me|net)//
 // @icon         https://www.dranime.net/favicon.ico
@@ -94,7 +94,7 @@
 
     var count;
     function countPost(response) {
-        let postauth = response.response.getElementsByClassName("xw1");
+        let postauth = response.response.querySelectorAll("a.xw1");
         for(let j = postauth.length-1; count < 6 && j >= 0; j--) {
             let pattern = /\d+/;
             let postuid = postauth[j].href.match(pattern);
