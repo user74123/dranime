@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    dranime
-// @version      1.1.1
+// @version      1.1.2
 // @description  水水沒煩惱
 // @include      /^https://(bbs|www)\.(deainx|dotmu|dranime)\.(me|net)//
 // @icon         https://www.dranime.net/favicon.ico
@@ -104,7 +104,7 @@
         }
         if (count == 6) {
             let locale = navigator.language;
-            if (locale == "en") {
+            if (locale.startsWith("en")) {
                 alert("Caution! 6 consecutive posts detected.");
             } else if (locale == "zh-HK" || locale == "zh-TW") {
                 alert("偵測到你已6連帖，請謹慎發表回覆！");
