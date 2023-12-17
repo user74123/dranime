@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    dranime
-// @version      1.1.2
+// @version      1.1.3
 // @description  水水沒煩惱
 // @include      /^https://(bbs|www)\.(deainx|dotmu|dranime)\.(me|net)//
 // @icon         https://www.dranime.net/favicon.ico
@@ -96,10 +96,12 @@
         let postauth = response.response.querySelectorAll("a.xw1");
         for(let i = postauth.length-1; count < 6 && i >= 0; i--) {
             let pattern = /\d+/;
-            let postuid = postauth[i].href.match(pattern);
-            if (postuid == discuz_uid) {
-                count++;
-            } else return false;
+            if (pattern.test(postauth[i].href)) {
+                let postuid = postauth[i].href.match(pattern);
+                if (postuid == discuz_uid) {
+                    count++;
+                } else return false;
+            }
         }
         if (count == 6) {
             let locale = navigator.language;
@@ -117,11 +119,11 @@
 
     function getTid() {
         let pattern = /(?:thread-|&tid=)(\d+)/;
-        return location.href.match(pattern)[1];
+        if (pattern.test(location.href)) return location.href.match(pattern)[1];
     }
 
     function getPage(url) {
         let pattern = /(?:thread-\d+-|&page=)(\d+)/;
-        return url.href.match(pattern)[1];
+        if (pattern.test(url.href)) return url.href.match(pattern)[1];
     }
 })();
