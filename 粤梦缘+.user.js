@@ -63,7 +63,6 @@
     var pt = Array.from(document.querySelectorAll(".pt"));
     var repbtns = fastre.concat(acpost).concat(pt);
     if (repbtns) {
-        let tid = getTid();
         for(let i = 0; i < repbtns.length; i++) {
             repbtns[i].addEventListener('click', function() {
                 GM.xmlHttpRequest({
