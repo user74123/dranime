@@ -96,9 +96,8 @@
     function countPost(response) {
         let postauth = response.response.querySelectorAll("a.xw1");
         for(let i = postauth.length-1; count < 6 && i >= 0; i--) {
-            let pattern = /\d+/;
-            if (pattern.test(postauth[i].href)) {
-                let postuid = postauth[i].href.match(pattern);
+            let pattern = /\d+/, postuid;
+            if ((postuid=postauth[i].href.match(pattern)) != null) {
                 if (postuid == discuz_uid) {
                     count++;
                 } else return false;
@@ -119,12 +118,12 @@
     }
 
     function getTid() {
-        let pattern = /(?:thread-|&tid=)(\d+)/;
-        if (pattern.test(location.href)) return location.href.match(pattern)[1];
+        let pattern = /(?:thread-|&tid=)(\d+)/, tid;
+        if ((tid=location.href.match(pattern)) != null) return tid[1];
     }
 
     function getPage(url) {
-        let pattern = /(?:thread-\d+-|&page=)(\d+)/;
-        if (pattern.test(url.href)) return url.href.match(pattern)[1];
+        let pattern = /(?:thread-\d+-|&page=)(\d+)/, page;
+        if ((page=url.href.match(pattern)) != null) return page[1];
     }
 })();
