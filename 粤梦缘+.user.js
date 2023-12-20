@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    dranime
-// @version      1.1.3
+// @version      1.1.4
 // @description  水水沒煩惱
 // @include      /^https://(bbs|www)\.(deainx|dotmu|dranime)\.(me|net)//
 // @icon         https://www.dranime.net/favicon.ico
@@ -25,10 +25,12 @@
 
             let hashId = location.hash.substring(1);
             let elemById = document.getElementById(hashId);
-            let elemByName = document.getElementsByName(hashId)[0];;
+            let elemByName = document.getElementsByName(hashId)[0];
 
-            let pattern = /^(?:lastpost|newpost)$/
-            if ((pattern.test(hashId)) && !elemByName) return;
+            if (!elemByName && hashId == "lastpost") {
+                elemByName = document.getElementsByName("newpost")[0];
+                if (!elemByName) return;
+            }
 
             let refSearch = document.referrer.split('?')[1];
             if (refSearch && refSearch.startsWith("mod=post&action=edit") && !elemById) {
