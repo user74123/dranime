@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    dranime
-// @version      1.1.4
+// @version      1.1.5
 // @description  水水沒煩惱
 // @include      /^https://(bbs|www)\.(deainx|dotmu|dranime)\.(me|net)//
 // @icon         https://www.dranime.net/favicon.ico
