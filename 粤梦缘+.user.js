@@ -6,6 +6,7 @@
 // @include      /^https://(bbs|www)\.(deainx|dotmu|dranime)\.(me|net)//
 // @icon         https://www.dranime.net/favicon.ico
 // @grant        GM.xmlHttpRequest
+// @connect      self
 // @run-at       document-idle
 // ==/UserScript==
 
