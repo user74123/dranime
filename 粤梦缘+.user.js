@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.0.0
+// @version      2.0.1
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -95,11 +95,11 @@
 
         var count;
         function countPost(response) {
-            let postauth = response.response.querySelectorAll('a.xw1');
+            let postauth = response.response.querySelectorAll('a[rel="nofollow"]');
             for (let i = postauth.length-1; count < 6 && i >= 0; i--) {
-                let pattern = /\d+/, postuid;
-                if ((postuid=postauth[i].href.match(pattern)) != null) {
-                    if (postuid == discuz_uid) {
+                let pattern = /&authorid=(\d+)/, postuid;
+                if ((postuid=postauth[i].search.match(pattern)) != null) {
+                    if (postuid[1] == discuz_uid) {
                         count++;
                     } else return false;
                 }
