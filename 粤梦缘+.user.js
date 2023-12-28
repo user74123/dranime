@@ -96,8 +96,8 @@
         var count;
         function countPost(response) {
             let postauth = response.response.querySelectorAll('a[rel="nofollow"]');
+            let pattern = /&authorid=(\d+)/, postuid;
             for (let i = postauth.length-1; count < 6 && i >= 0; i--) {
-                let pattern = /&authorid=(\d+)/, postuid;
                 if ((postuid=postauth[i].search.match(pattern)) != null) {
                     if (postuid[1] == discuz_uid) {
                         count++;
