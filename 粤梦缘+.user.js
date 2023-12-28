@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         粤梦缘+
-// @namespace    dranime
+// @namespace    https://www.dranime.net/thread-98025-1-1.html
 // @version      2.0.0
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
