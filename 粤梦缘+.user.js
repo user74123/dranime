@@ -128,11 +128,11 @@
         }
         const hant = {
             noredirect: '停用域名跳轉',
-            repalert: '偵測到你已6連帖，請謹慎發表回覆！'
+            repalert: '偵測到您已6連帖，請謹慎發表回覆！'
         }
         const hans = {
             noredirect: '禁用域名跳转',
-            repalert: '侦测到你已6连帖，请谨慎发表回复！'
+            repalert: '侦测到您已6连帖，请谨慎发表回复！'
         }
 
         locale = navigator.language;
