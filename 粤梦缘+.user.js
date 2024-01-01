@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.0.1
+// @version      2.0.2
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
 // @match        https://www.dotmu.net/*
+// @exclude      *://*/*&catid=*
 // @icon         https://www.dranime.net/favicon.ico
 // @grant        GM.registerMenuCommand
 // @grant        GM.getValue
