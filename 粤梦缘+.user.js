@@ -112,7 +112,7 @@
         }
 
         function getPage(url) {
-            let pattern = /(?:thread-\d+-|&page=)(\d+)/, page ;
+            let pattern = /(?:thread-\d+-|&page=)(\d+)/, page;
             if ((page=url.href.match(pattern)) != null) return page[1];
         }
     }
