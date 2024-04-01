@@ -59,7 +59,7 @@
             clearInterval(checkInterval);
 
             let imgs = document.querySelectorAll('img');
-            imgs.forEach(img => {
+            imgs.forEach((img) => {
                 let ori = img.getAttribute('original');
                 let src = img.getAttribute('file');
                 if (!src) {
