@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.0.2
+// @version      2.1.0
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -55,7 +55,27 @@
             }
         }, 500);
 
-        var checkTimeout = setTimeout(() => { clearInterval(checkInterval); }, 5000);
+        var checkTimeout = setTimeout(() => {
+            clearInterval(checkInterval);
+
+            let imgs = document.querySelectorAll('img');
+            imgs.forEach(img => {
+                let ori = img.getAttribute('original');
+                let src = img.getAttribute('file');
+                if (!src) {
+                    src = ori;
+                }
+                if (src) {
+                    if (src.includes('images.deainx.net/data/attachment/')) {
+                        src = src.replace('images.deainx.net', location.hostname);
+                    }
+                    if (ori != src) {
+                        img.setAttribute('original', src);
+                        img.src = src;
+                    }
+                }
+            });
+        }, 3000);
 
         if (location.search.startsWith('?mod=space&do=notice')) {
             let parent = document.getElementsByClassName('bm bw0')[0];
