@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.1.0
+// @version      2.1.1
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -91,14 +91,13 @@
                 repbtns[i].addEventListener('click', () => {
                     GM.xmlHttpRequest({
                         method: 'GET',
-                        url: `/forum.php?mod=redirect&goto=lastpost&tid=${tid}`,
+                        url: `/forum.php?mod=viewthread&tid=${tid}&page=${Number.MAX_SAFE_INTEGER}`,
                         responseType: 'document',
                         onload: (response) => {
                             count = 0;
                             let linked = countPost(response);
                             if (linked) {
-                                let finalurl = new URL(response.finalUrl);
-                                let page = getPage(finalurl);
+                                let page = getPage(response);
                                 GM.xmlHttpRequest({
                                     method: 'GET',
                                     url: `/forum.php?mod=viewthread&tid=${tid}&page=${page-1}`,
@@ -116,7 +115,7 @@
 
         var count;
         function countPost(response) {
-            let postauth = response.response.querySelectorAll('a[rel="nofollow"]');
+            let postauth = getPostAuth(response.response, true);
             let pattern = /&authorid=(\d+)/, postuid;
             for (let i = postauth.length-1; count < 6 && i >= 0; i--) {
                 if ((postuid=postauth[i].search.match(pattern)) != null) {
@@ -132,9 +131,15 @@
             return true;
         }
 
-        function getPage(url) {
-            let pattern = /(?:thread-\d+-|&page=)(\d+)/, page;
-            if ((page=url.href.match(pattern)) != null) return page[1];
+        function getPage(response) {
+            let postauth = getPostAuth(response.response, false);
+            let pattern = /&page=(\d+)/, page;
+            if ((page=postauth.search.match(pattern)) != null) return page[1];
+        }
+
+        function getPostAuth(doc, all) {
+            if (all) return doc.querySelectorAll('a[rel="nofollow"]');
+            else return doc.querySelector('a[rel="nofollow"]');
         }
     }
 
