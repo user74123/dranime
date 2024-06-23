@@ -121,8 +121,7 @@
             let pattern = /&authorid=(\d+)/, postuid;
             for (let i = postauth.length-1; count < 6 && i >= 0; i--) {
                 if ((postuid=postauth[i].search.match(pattern)) != null) {
-                    if (postuid[1] != discuz_uid) {
-                        console.log(postuid[1]);
+                    if (postuid[1] == discuz_uid) {
                         count++;
                     } else return false;
                 }
