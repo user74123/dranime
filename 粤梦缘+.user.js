@@ -105,32 +105,30 @@
                 });
             }
 
-            var repbtns = document.querySelectorAll('.fastre, [id^="post_reply"], .pt');
-            if (repbtns) {
-                for (let i = 0; i < repbtns.length; i++) {
-                    repbtns[i].addEventListener('click', () => {
-                        GM.xmlHttpRequest({
-                            method: 'GET',
-                            url: `/forum.php?mod=viewthread&tid=${tid}&page=${Number.MAX_SAFE_INTEGER}`,
-                            responseType: 'document',
-                            onload: (response) => {
-                                count = 0;
-                                let linked = countPost(response);
-                                if (linked) {
-                                    let page = getPage(response);
-                                    GM.xmlHttpRequest({
-                                        method: 'GET',
-                                        url: `/forum.php?mod=viewthread&tid=${tid}&page=${page-1}`,
-                                        responseType: 'document',
-                                        onload: (response) => {
-                                            countPost(response);
-                                        }
-                                    });
-                                }
+            let repbtns = document.querySelectorAll('.fastre, [id^="post_reply"], .pt');
+            for (let i = 0; i < repbtns.length; i++) {
+                repbtns[i].addEventListener('click', () => {
+                    GM.xmlHttpRequest({
+                        method: 'GET',
+                        url: `/forum.php?mod=viewthread&tid=${tid}&page=${Number.MAX_SAFE_INTEGER}`,
+                        responseType: 'document',
+                        onload: (response) => {
+                            count = 0;
+                            let linked = countPost(response);
+                            if (linked) {
+                                let page = getPage(response);
+                                GM.xmlHttpRequest({
+                                    method: 'GET',
+                                    url: `/forum.php?mod=viewthread&tid=${tid}&page=${page-1}`,
+                                    responseType: 'document',
+                                    onload: (response) => {
+                                        countPost(response);
+                                    }
+                                });
                             }
-                        });
+                        }
                     });
-                }
+                });
             }
         }
 
