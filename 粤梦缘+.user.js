@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.0
+// @version      2.2.1
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -85,13 +85,14 @@
         }
 
         if (tid) {
-            let pg = document.getElementsByClassName('pg');
-            for (let i = 0; i < pg.length; i++) {
+            let pgs = document.getElementsByClassName('pgs cl');
+            for (let i = 0; i < pgs.length; i++) {
+                let pg = pgs[i].getElementsByClassName('pg')[0];
                 let lastpg = document.createElement('a');
                 lastpg.href = 'javascript:void(0);';
                 lastpg.classList.add('nxt');
                 lastpg.innerHTML = '尾页';
-                lastpg = pg[i].appendChild(lastpg);
+                lastpg = pg.appendChild(lastpg);
                 lastpg.addEventListener('click', () => {
                     GM.xmlHttpRequest({
                         method: 'GET',
