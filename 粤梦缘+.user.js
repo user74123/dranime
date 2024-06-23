@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.1.1
+// @version      2.2.0
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -24,7 +24,6 @@
         var checkInterval = setInterval(() => {
             if (location.hash) {
                 clearInterval(checkInterval);
-                clearTimeout(checkTimeout);
 
                 if (history.scrollRestoration) {
                     history.scrollRestoration = 'manual';
@@ -85,31 +84,53 @@
             }
         }
 
-        var repbtns = document.querySelectorAll('.fastre, [id^="post_reply"], .pt');
-        if (repbtns) {
-            for (let i = 0; i < repbtns.length; i++) {
-                repbtns[i].addEventListener('click', () => {
+        if (tid) {
+            let pg = document.getElementsByClassName('pg');
+            for (let i = 0; i < pg.length; i++) {
+                let lastpg = document.createElement('a');
+                lastpg.href = 'javascript:void(0);';
+                lastpg.classList.add('nxt');
+                lastpg.innerHTML = '尾页';
+                lastpg = pg[i].appendChild(lastpg);
+                lastpg.addEventListener('click', () => {
                     GM.xmlHttpRequest({
                         method: 'GET',
                         url: `/forum.php?mod=viewthread&tid=${tid}&page=${Number.MAX_SAFE_INTEGER}`,
                         responseType: 'document',
                         onload: (response) => {
-                            count = 0;
-                            let linked = countPost(response);
-                            if (linked) {
-                                let page = getPage(response);
-                                GM.xmlHttpRequest({
-                                    method: 'GET',
-                                    url: `/forum.php?mod=viewthread&tid=${tid}&page=${page-1}`,
-                                    responseType: 'document',
-                                    onload: (response) => {
-                                        countPost(response);
-                                    }
-                                });
-                            }
+                            let page = getPage(response);
+                            location.href = `thread-${tid}-${page}-1.html`;
                         }
                     });
                 });
+            }
+
+            var repbtns = document.querySelectorAll('.fastre, [id^="post_reply"], .pt');
+            if (repbtns) {
+                for (let i = 0; i < repbtns.length; i++) {
+                    repbtns[i].addEventListener('click', () => {
+                        GM.xmlHttpRequest({
+                            method: 'GET',
+                            url: `/forum.php?mod=viewthread&tid=${tid}&page=${Number.MAX_SAFE_INTEGER}`,
+                            responseType: 'document',
+                            onload: (response) => {
+                                count = 0;
+                                let linked = countPost(response);
+                                if (linked) {
+                                    let page = getPage(response);
+                                    GM.xmlHttpRequest({
+                                        method: 'GET',
+                                        url: `/forum.php?mod=viewthread&tid=${tid}&page=${page-1}`,
+                                        responseType: 'document',
+                                        onload: (response) => {
+                                            countPost(response);
+                                        }
+                                    });
+                                }
+                            }
+                        });
+                    });
+                }
             }
         }
 
