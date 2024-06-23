@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.1
+// @version      2.2.2
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -93,42 +93,24 @@
                 lastpg.classList.add('nxt');
                 lastpg.innerHTML = '尾页';
                 lastpg = pg.appendChild(lastpg);
-                lastpg.addEventListener('click', () => {
-                    GM.xmlHttpRequest({
-                        method: 'GET',
-                        url: `/forum.php?mod=viewthread&tid=${tid}&page=${Number.MAX_SAFE_INTEGER}`,
-                        responseType: 'document',
-                        onload: (response) => {
-                            let page = getPage(response);
-                            location.href = `thread-${tid}-${page}-1.html`;
-                        }
-                    });
+                lastpg.addEventListener('click', async () => {
+                    let response = await goThread(Number.MAX_SAFE_INTEGER);
+                    let page = getPage(response);
+                    location.href = `thread-${tid}-${page}-1.html`;
                 });
             }
 
             let repbtns = document.querySelectorAll('.fastre, [id^="post_reply"], .pt');
             for (let i = 0; i < repbtns.length; i++) {
-                repbtns[i].addEventListener('click', () => {
-                    GM.xmlHttpRequest({
-                        method: 'GET',
-                        url: `/forum.php?mod=viewthread&tid=${tid}&page=${Number.MAX_SAFE_INTEGER}`,
-                        responseType: 'document',
-                        onload: (response) => {
-                            count = 0;
-                            let linked = countPost(response);
-                            if (linked) {
-                                let page = getPage(response);
-                                GM.xmlHttpRequest({
-                                    method: 'GET',
-                                    url: `/forum.php?mod=viewthread&tid=${tid}&page=${page-1}`,
-                                    responseType: 'document',
-                                    onload: (response) => {
-                                        countPost(response);
-                                    }
-                                });
-                            }
-                        }
-                    });
+                repbtns[i].addEventListener('click', async () => {
+                    let response = await goThread(Number.MAX_SAFE_INTEGER);
+                    count = 0;
+                    let linked = countPost(response);
+                    if (linked) {
+                        let page = getPage(response);
+                        response = await goThread(page-1);
+                        countPost(response);
+                    }
                 });
             }
         }
@@ -139,7 +121,8 @@
             let pattern = /&authorid=(\d+)/, postuid;
             for (let i = postauth.length-1; count < 6 && i >= 0; i--) {
                 if ((postuid=postauth[i].search.match(pattern)) != null) {
-                    if (postuid[1] == discuz_uid) {
+                    if (postuid[1] != discuz_uid) {
+                        console.log(postuid[1]);
                         count++;
                     } else return false;
                 }
@@ -160,6 +143,19 @@
         function getPostAuth(doc, all) {
             if (all) return doc.querySelectorAll('a[rel="nofollow"]');
             else return doc.querySelector('a[rel="nofollow"]');
+        }
+
+        async function goThread(page) {
+            let ret;
+            await GM.xmlHttpRequest({
+                method: 'GET',
+                url: `/forum.php?mod=viewthread&tid=${tid}&page=${page}`,
+                responseType: 'document',
+                onload: (response) => {
+                    ret = response;
+                }
+            });
+            return ret;
         }
     }
 
