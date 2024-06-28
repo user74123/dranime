@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.3
+// @version      2.2.4
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -96,7 +96,7 @@
                 lastpg.addEventListener('click', async () => {
                     let response = await goThread(Number.MAX_SAFE_INTEGER);
                     let page = getPage(response);
-                    location.href = `thread-${tid}-${page}-1.html`;
+                    location.href = `thread-${tid}-${page}-1.html#lastpost`;
                 });
             }
 
