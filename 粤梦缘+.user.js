@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.6
+// @version      2.2.7
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -88,16 +88,18 @@
             let pgs = document.querySelectorAll('.pgt, .pgs.mtm.mbm.cl');
             for (let i = 0; i < pgs.length; i++) {
                 let pg = pgs[i].getElementsByClassName('pg')[0];
-                let lastpg = document.createElement('a');
-                lastpg.href = 'javascript:void(0);';
-                lastpg.classList.add('nxt');
-                lastpg.innerHTML = '尾页';
-                lastpg = pg.appendChild(lastpg);
-                lastpg.addEventListener('click', async () => {
-                    let response = await goThread(Number.MAX_SAFE_INTEGER);
-                    let page = getPage(response);
-                    location.href = `thread-${tid}-${page}-1.html#lastpost`;
-                });
+                if (pg) {
+                    let lastpg = document.createElement('a');
+                    lastpg.href = 'javascript:void(0);';
+                    lastpg.classList.add('nxt');
+                    lastpg.innerHTML = '尾页';
+                    lastpg = pg.appendChild(lastpg);
+                    lastpg.addEventListener('click', async () => {
+                        let response = await goThread(Number.MAX_SAFE_INTEGER);
+                        let page = getPage(response);
+                        location.href = `thread-${tid}-${page}-1.html#lastpost`;
+                    });
+                }
             }
 
             let repbtns = document.querySelectorAll('.fastre, [id^="post_reply"], .pt');
