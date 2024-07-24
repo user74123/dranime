@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.7
+// @version      2.2.8
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -62,19 +62,29 @@
                 let ori = img.getAttribute('original');
                 let src = img.getAttribute('file');
                 if (!src) {
-                    src = ori;
+                    if (ori) src = ori;
+                    else src = img.src;
                 }
-                if (src) {
-                    if (src.includes('images.deainx.net/data/attachment/')) {
-                        src = src.replace('images.deainx.net', location.hostname);
-                    }
-                    if (ori != src) {
-                        img.setAttribute('original', src);
-                        img.src = src;
-                    }
+                let old = false;
+                if (src.includes('images.deainx.net')) {
+                    src = src.replace('images.deainx.net', location.hostname);
+                    old = true;
+                }
+                if (old || ori && ori != src) {
+                    if (ori) img.setAttribute('original', src);
+                    img.src = src;
                 }
             });
         }, 3000);
+
+        document.addEventListener('click', (event) => {
+            let link = event.target.closest('a');
+            if (link && link.hostname == 'www.deainx.net') {
+                event.preventDefault();
+                let newlink = link.href.replace('www.deainx.net', location.hostname);
+                open(newlink);
+            }
+        });
 
         if (location.search.startsWith('?mod=space&do=notice')) {
             let parent = document.getElementsByClassName('bm bw0')[0];
