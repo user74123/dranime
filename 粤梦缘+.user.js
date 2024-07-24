@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.8
+// @version      2.2.9
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -95,7 +95,7 @@
         }
 
         if (typeof tid !== 'undefined') {
-            let pgs = document.querySelectorAll('.pgt, .pgs.mtm.mbm.cl');
+            let pgs = document.querySelectorAll('.pgt, [class^="pgs mtm mbm cl"]');
             for (let i = 0; i < pgs.length; i++) {
                 let pg = pgs[i].getElementsByClassName('pg')[0];
                 if (pg) {
