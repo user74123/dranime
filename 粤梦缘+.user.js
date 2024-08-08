@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.9
+// @version      2.2.10
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -140,6 +140,7 @@
             }
             if (count == 6) {
                 alert(locale.repalert);
+                hideWindow('reply');
                 return false;
             }
             return true;
