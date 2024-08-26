@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.10
+// @version      2.2.11
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -42,7 +42,7 @@
                 if (refSearch && refSearch.startsWith('mod=post&action=edit') && !elemById) {
                     location.href = `?mod=redirect&goto=findpost&ptid=${tid}&pid=${hashId.substring(3)}`;
                 } else if (location.search.startsWith('?mod=viewthread') && !(elemById || elemByName)) {
-                    let page = getPage(location);
+                    let page = getPage(document);
                     location.search = `?prevpage=1&mod=viewthread&tid=${tid}&page=${page-1}`;
                 }
 
@@ -95,6 +95,7 @@
         }
 
         if (typeof tid !== 'undefined') {
+            let ft = getCookie('ftwwwdranimenet');
             let pgs = document.querySelectorAll('.pgt, [class^="pgs mtm mbm cl"]');
             for (let i = 0; i < pgs.length; i++) {
                 let pg = pgs[i].getElementsByClassName('pg')[0];
@@ -102,11 +103,12 @@
                     let lastpg = document.createElement('a');
                     lastpg.href = 'javascript:void(0);';
                     lastpg.classList.add('nxt');
-                    lastpg.innerHTML = '尾页';
+                    if (ft == '1') lastpg.innerHTML = '尾頁';
+                    else lastpg.innerHTML = '尾页';
                     lastpg = pg.appendChild(lastpg);
                     lastpg.addEventListener('click', async () => {
                         let response = await goThread(Number.MAX_SAFE_INTEGER);
-                        let page = getPage(response);
+                        let page = getPage(response.response);
                         location.href = `thread-${tid}-${page}-1.html#lastpost`;
                     });
                 }
@@ -117,19 +119,19 @@
                 repbtns[i].addEventListener('click', async () => {
                     let response = await goThread(Number.MAX_SAFE_INTEGER);
                     count = 0;
-                    let linked = countPost(response);
+                    let linked = countPost(response.response);
                     if (linked) {
-                        let page = getPage(response);
+                        let page = getPage(response.response);
                         response = await goThread(page-1);
-                        countPost(response);
+                        countPost(response.response);
                     }
                 });
             }
         }
 
         var count;
-        function countPost(response) {
-            let postauth = getPostAuth(response.response, true);
+        function countPost(doc) {
+            let postauth = getPostAuth(doc, true);
             let pattern = /&authorid=(\d+)/, postuid;
             for (let i = postauth.length-1; count < 6 && i >= 0; i--) {
                 if ((postuid=postauth[i].search.match(pattern)) != null) {
@@ -146,8 +148,8 @@
             return true;
         }
 
-        function getPage(response) {
-            let postauth = getPostAuth(response.response, false);
+        function getPage(doc) {
+            let postauth = getPostAuth(doc, false);
             let pattern = /&page=(\d+)/, page;
             if ((page=postauth.search.match(pattern)) != null) return page[1];
         }
