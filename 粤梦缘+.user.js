@@ -103,8 +103,7 @@
                     let lastpg = document.createElement('a');
                     lastpg.href = 'javascript:void(0);';
                     lastpg.classList.add('nxt');
-                    if (ft == '1') lastpg.innerHTML = '尾頁';
-                    else lastpg.innerHTML = '尾页';
+                    lastpg.innerHTML = '尾页';
                     lastpg = pg.appendChild(lastpg);
                     lastpg.addEventListener('click', async () => {
                         let response = await goThread(Number.MAX_SAFE_INTEGER);
