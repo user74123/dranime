@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.11
+// @version      2.2.12
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -95,7 +95,6 @@
         }
 
         if (typeof tid !== 'undefined') {
-            let ft = getCookie('ftwwwdranimenet');
             let pgs = document.querySelectorAll('.pgt, [class^="pgs mtm mbm cl"]');
             for (let i = 0; i < pgs.length; i++) {
                 let pg = pgs[i].getElementsByClassName('pg')[0];
@@ -107,7 +106,7 @@
                     lastpg = pg.appendChild(lastpg);
                     lastpg.addEventListener('click', async () => {
                         let response = await goThread(Number.MAX_SAFE_INTEGER);
-                        let page = getPage(response.response);
+                        let page = getPage(response);
                         location.href = `thread-${tid}-${page}-1.html#lastpost`;
                     });
                 }
@@ -118,11 +117,11 @@
                 repbtns[i].addEventListener('click', async () => {
                     let response = await goThread(Number.MAX_SAFE_INTEGER);
                     count = 0;
-                    let linked = countPost(response.response);
+                    let linked = countPost(response);
                     if (linked) {
-                        let page = getPage(response.response);
+                        let page = getPage(response);
                         response = await goThread(page-1);
-                        countPost(response.response);
+                        countPost(response);
                     }
                 });
             }
@@ -165,7 +164,7 @@
                 url: `/forum.php?mod=viewthread&tid=${tid}&page=${page}`,
                 responseType: 'document',
                 onload: (response) => {
-                    ret = response;
+                    ret = response.response;
                 }
             });
             return ret;
