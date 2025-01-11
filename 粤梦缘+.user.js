@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.12
+// @version      2.2.13
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -67,7 +67,7 @@
                 }
                 let old = false;
                 if (src.includes('/data/attachment/')) {
-                    src = src.replace(/(https?:\/\/)?.+\/data\/attachment/, 'https://img.dranime.net');
+                    src = src.replace(/.+\..+\/data\/attachment/, 'https://img.dranime.net');
                     old = true;
                 }
                 if (old || ori && ori != src) {
