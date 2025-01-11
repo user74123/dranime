@@ -71,7 +71,7 @@
                     else src = img.src;
                 }
                 let old = false;
-                if (src.includes('/data/attachment/')) {
+                if (src.includes('data/attachment/')) {
                     src = src.replace(/.*?data\/attachment/, 'https://img.dranime.net');
                     old = true;
                 }
