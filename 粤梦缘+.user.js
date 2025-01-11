@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.15
+// @version      2.2.16
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -21,8 +21,10 @@
     'use strict';
 
     onload = () => {
-        var style = document.querySelector('style');
-        style.innerText = style.innerText.replace(/url\('https?:\/\/.+?\/data\/attachment\/(.+?)'\)/g, 'url(\'https://img.dranime.net/$1\')');
+        if (document.body.id == 'space') {
+            var style = document.querySelector('style');
+            style.innerText = style.innerText.replace(/url\('https?:\/\/.+?\/data\/attachment\/(.+?)'\)/g, 'url(\'https://img.dranime.net/$1\')');
+        }
 
         var checkInterval = setInterval(() => {
             if (location.hash) {
