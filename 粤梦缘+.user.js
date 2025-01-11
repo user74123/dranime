@@ -67,7 +67,7 @@
                 }
                 let old = false;
                 if (!src.startsWith('https://img.dranime.net') && src.includes('/data/attachment/')) {
-                    src = src.replace(/^.+\..+\/data\/attachment/, 'https://img.dranime.net');
+                    src = src.replace(/^.+\.[^\/]+\/data\/attachment/, 'https://img.dranime.net');
                     old = true;
                 }
                 if (old || ori && ori != src) {
