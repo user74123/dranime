@@ -66,8 +66,8 @@
                     else src = img.src;
                 }
                 let old = false;
-                if (src.includes('images.deainx.net')) {
-                    src = src.replace('images.deainx.net', location.hostname);
+                if (src.includes('/data/attachment/')) {
+                    src = src.replace(/(https?:\/\/)?.+\/data\/attachment/, 'https://img.dranime.net');
                     old = true;
                 }
                 if (old || ori && ori != src) {
