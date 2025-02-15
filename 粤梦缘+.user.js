@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.20
+// @version      2.2.21
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://bbs.deainx.me/*
@@ -19,6 +19,8 @@
 
 (function() {
     'use strict';
+
+    const DOMAIN_ALIAS = `(?:dotmu\\.net|deainx\\.net|deainx\\.me|dranime\\.net)`;
 
     onload = () => {
         var checkInterval = setInterval(() => {
@@ -58,6 +60,8 @@
             clearInterval(checkInterval);
 
             let imgs = document.querySelectorAll('img');
+            let pattern = `^(?:https?://.*?\\.${DOMAIN_ALIAS}/)?data/attachment/`;
+            let regex = new RegExp(pattern);
             imgs.forEach((img) => {
                 let ori = img.getAttribute('original');
                 let src = img.getAttribute('file');
@@ -66,8 +70,8 @@
                     else src = img.src;
                 }
                 let old = false;
-                if (src.includes('data/attachment/')) {
-                    src = src.replace(/.*?data\/attachment/, 'https://img.dranime.net');
+                if (src.match(regex)) {
+                    src = src.replace(regex, 'https://img.dranime.net/');
                     old = true;
                 }
                 if (old || ori && ori != src) {
@@ -204,8 +208,10 @@
         GM.registerMenuCommand(locale.noredirect, () => { GM.deleteValue('domain'); });
 
         if (document.body.id == 'space') {
-            var style = document.querySelector('style');
-            style.innerText = style.innerText.replace(/url\('[^']*?data\/attachment\/(.+?)'\)/g, 'url(\'https://img.dranime.net/$1\')');
+            let style = document.querySelector('style');
+            let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
+            let regex = new RegExp(pattern, "g");
+            style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
         }
     }
 
