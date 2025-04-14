@@ -1,10 +1,9 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.21
+// @version      2.2.22
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
-// @match        https://bbs.deainx.me/*
 // @match        https://www.dotmu.net/*
 // @exclude      *://*/*&catid=*
 // @icon         https://www.dranime.net/favicon.ico
@@ -31,7 +30,7 @@
                     history.scrollRestoration = 'manual';
                 }
 
-                let hashId = location.hash.substring(1);
+                let hashId = location.hash.slice(1);
                 let elemById = document.getElementById(hashId);
                 let elemByName = document.getElementsByName(hashId)[0];
 
@@ -42,7 +41,7 @@
 
                 let refSearch = document.referrer.split('?')[1];
                 if (refSearch && refSearch.startsWith('mod=post&action=edit') && !elemById) {
-                    location.href = `?mod=redirect&goto=findpost&ptid=${tid}&pid=${hashId.substring(3)}`;
+                    location.href = `?mod=redirect&goto=findpost&ptid=${tid}&pid=${hashId.slice(3)}`;
                 } else if (location.search.startsWith('?mod=viewthread') && !(elemById || elemByName)) {
                     let page = getPage(document);
                     location.search = `?prevpage=1&mod=viewthread&tid=${tid}&page=${page-1}`;
@@ -83,9 +82,10 @@
 
         document.addEventListener('click', (event) => {
             let link = event.target.closest('a');
-            if (link && link.hostname == 'www.deainx.net') {
+            let pattern = /(www\.deainx\.net|www\.deainx\.me|bbs\.deainx\.me)/, old;
+            if (link && (old=link.hostname.match(pattern)) != null) {
                 event.preventDefault();
-                let newlink = link.href.replace('www.deainx.net', location.hostname);
+                let newlink = link.href.replace(old[1], location.hostname);
                 open(newlink);
             }
         });
@@ -129,6 +129,13 @@
                     }
                 });
             }
+        }
+
+        if (document.body.id == 'space') {
+                let style = document.querySelector('style');
+                let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
+                let regex = new RegExp(pattern, "g");
+                style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
         }
 
         var count;
@@ -203,16 +210,8 @@
         }
 
         GM.registerMenuCommand('dranime.net', () => { GM.setValue('domain','www.dranime.net'); });
-        GM.registerMenuCommand('deainx.me', () => { GM.setValue('domain','bbs.deainx.me'); });
         GM.registerMenuCommand('dotmu.net', () => { GM.setValue('domain','www.dotmu.net'); });
         GM.registerMenuCommand(locale.noredirect, () => { GM.deleteValue('domain'); });
-
-        if (document.body.id == 'space') {
-            let style = document.querySelector('style');
-            let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
-            let regex = new RegExp(pattern, "g");
-            style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
-        }
     }
 
     function redirect() {
