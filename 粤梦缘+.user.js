@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.22
+// @version      2.2.23
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -116,16 +116,23 @@
                 }
             }
 
-            let repbtns = document.querySelectorAll('.fastre, [id^="post_reply"], .pt');
+            let repbtns = document.querySelectorAll('[id^="post_reply"], .pt');
             for (let i = 0; i < repbtns.length; i++) {
                 repbtns[i].addEventListener('click', async () => {
                     let response = await goThread(Number.MAX_SAFE_INTEGER);
-                    count = 0;
-                    let linked = countPost(response);
-                    if (linked) {
+                    countPost(response, 'thread', 1);
+                });
+            }
+
+            let repqbtns = document.querySelectorAll('.fastre');
+            for (let i = 0; i < repqbtns.length; i++) {
+                repqbtns[i].addEventListener('click', async () => {
+                    let response = await goThread(Number.MAX_SAFE_INTEGER);
+                    let prev = countPost(response, 'quote', 6);
+                    if (prev) {
                         let page = getPage(response);
                         response = await goThread(page-1);
-                        countPost(response);
+                        countPost(response, 'quote', prev);
                     }
                 });
             }
@@ -138,23 +145,30 @@
                 style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
         }
 
-        var count;
-        function countPost(doc) {
+        function countPost(doc, reptype, thr) {
+            let count = thr;
             let postauth = getPostAuth(doc, true);
             let pattern = /&authorid=(\d+)/, postuid;
-            for (let i = postauth.length-1; count < 6 && i >= 0; i--) {
+            for (let i = postauth.length-1; count > 0 && i >= 0; i--) {
                 if ((postuid=postauth[i].search.match(pattern)) != null) {
                     if (postuid[1] == discuz_uid) {
-                        count++;
-                    } else return false;
+                        count--;
+                    } else return;
                 }
             }
-            if (count == 6) {
-                alert(locale.repalert);
+            if (count == 0) {
+                switch (reptype) {
+                    case 'thread':
+                        alert(locale.repalert);
+                        break;
+                    case 'quote':
+                        alert(locale.repqalert);
+                        break;
+                }
                 hideWindow('reply');
-                return false;
+                return;
             }
-            return true;
+            return count;
         }
 
         function getPage(doc) {
@@ -189,15 +203,18 @@
 
         const en = {
             noredirect: 'Disable Domain Redirect',
-            repalert: 'CAUTION! 6 consecutive posts detected.'
+            repalert: 'CAUTION! Consecutive comments detected.',
+            repqalert: 'CAUTION! 6 consecutive replies detected.'
         }
         const hant = {
             noredirect: '停用域名跳轉',
-            repalert: '偵測到您已6連帖，請謹慎發表回覆！'
+            repalert: '偵測到您連續發言，請謹慎發言！',
+            repqalert: '偵測到您已6連帖，請謹慎發表回覆！'
         }
         const hans = {
             noredirect: '禁用域名跳转',
-            repalert: '侦测到您已6连帖，请谨慎发表回复！'
+            repalert: '侦测到您连续发言，请谨慎发言！',
+            repqalert: '侦测到您已6连帖，请谨慎发表回复！'
         }
 
         locale = navigator.language;
