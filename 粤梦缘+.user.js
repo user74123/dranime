@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.2.23
+// @version      2.3.0
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -139,17 +139,18 @@
         }
 
         if (document.body.id == 'space') {
-                let style = document.querySelector('style');
-                let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
-                let regex = new RegExp(pattern, "g");
-                style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
+            let style = document.querySelector('style');
+            let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
+            let regex = new RegExp(pattern, "g");
+            style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
         }
 
-        function countPost(doc, reptype, thr) {
-            let count = thr;
+        function countPost(doc, reptype, count) {
+            let first;
             let postauth = getPostAuth(doc, true);
+            if (postauth[0].search.match(/(?<=&page=)\d+/) == 1) first = 1;
             let pattern = /&authorid=(\d+)/, postuid;
-            for (let i = postauth.length-1; count > 0 && i >= 0; i--) {
+            for (let i = postauth.length-1; count > 0 && i >= first; i--) {
                 if ((postuid=postauth[i].search.match(pattern)) != null) {
                     if (postuid[1] == discuz_uid) {
                         count--;
