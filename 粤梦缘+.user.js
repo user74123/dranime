@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         粤梦缘+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.3.0
+// @version      2.3.1
 // @description  水水沒煩惱
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -146,7 +146,7 @@
         }
 
         function countPost(doc, reptype, count) {
-            let first;
+            let first = 0;
             let postauth = getPostAuth(doc, true);
             if (postauth[0].search.match(/(?<=&page=)\d+/) == 1) first = 1;
             let pattern = /&authorid=(\d+)/, postuid;
