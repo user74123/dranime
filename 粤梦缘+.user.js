@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         粤梦缘+
+// @name         飄粵社+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      2.3.1
-// @description  水水沒煩惱
+// @version      3.0.0
+// @description  粵水粵掂
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
 // @exclude      *://*/*&catid=*
