@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         飄粵社+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      3.0.0
+// @version      3.0.1
 // @description  粵水粵掂
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -98,7 +98,7 @@
             }
         }
 
-        if (typeof tid !== 'undefined') {
+        if (typeof tid !== 'undefined' && typeof postaction === 'undefined') {
             let pgs = document.querySelectorAll('.pgt, [class^="pgs mtm mbm cl"]');
             for (let i = 0; i < pgs.length; i++) {
                 let pg = pgs[i].getElementsByClassName('pg')[0];
