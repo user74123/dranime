@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         飄粵社+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      3.0.1
+// @version      3.0.2
 // @description  粵水粵掂
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -125,14 +125,20 @@
             }
 
             let repqbtns = document.querySelectorAll('.fastre');
-            for (let i = 0; i < repqbtns.length; i++) {
+            for (let i = 0, currpage = getPage(document); i < repqbtns.length; i++) {
                 repqbtns[i].addEventListener('click', async () => {
                     let response = await goThread(Number.MAX_SAFE_INTEGER);
-                    let prev = countPost(response, 'quote', 6);
-                    if (prev) {
-                        let page = getPage(response);
-                        response = await goThread(page-1);
-                        countPost(response, 'quote', prev);
+                    if (i == 0 && currpage == 1) {
+                        countPost(response, 'thread', 1);
+                    }else {
+                        let prev = countPost(response, 'quote', 6);
+                        if (prev) {
+                            let page = getPage(response);
+                            if (page > 1) {
+                                response = await goThread(page-1);
+                                countPost(response, 'quote', prev);
+                            }
+                        }
                     }
                 });
             }
