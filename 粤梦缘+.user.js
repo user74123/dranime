@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         飄粵社+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      3.0.2
+// @version      3.0.3
 // @description  粵水粵掂
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -42,14 +42,14 @@
                 let refSearch = document.referrer.split('?')[1];
                 if (refSearch && refSearch.startsWith('mod=post&action=edit') && !elemById) {
                     location.href = `?mod=redirect&goto=findpost&ptid=${tid}&pid=${hashId.slice(3)}`;
-                } else if (location.search.startsWith('?mod=viewthread') && !(elemById || elemByName)) {
+                }else if (location.search.startsWith('?mod=viewthread') && !(elemById || elemByName)) {
                     let page = getPage(document);
                     location.search = `?prevpage=1&mod=viewthread&tid=${tid}&page=${page-1}`;
                 }
 
                 if (elemById) {
                     elemById.scrollIntoView();
-                } else if (elemByName) {
+                }else if (elemByName) {
                     elemByName.scrollIntoView();
                 }
             }
@@ -120,7 +120,7 @@
             for (let i = 0; i < repbtns.length; i++) {
                 repbtns[i].addEventListener('click', async () => {
                     let response = await goThread(Number.MAX_SAFE_INTEGER);
-                    countPost(response, 'thread', 1);
+                    await countPost(response, 'thread', 1, 6);
                 });
             }
 
@@ -129,16 +129,9 @@
                 repqbtns[i].addEventListener('click', async () => {
                     let response = await goThread(Number.MAX_SAFE_INTEGER);
                     if (i == 0 && currpage == 1) {
-                        countPost(response, 'thread', 1);
+                        await countPost(response, 'thread', 1, 6);
                     }else {
-                        let prev = countPost(response, 'quote', 6);
-                        if (prev) {
-                            let page = getPage(response);
-                            if (page > 1) {
-                                response = await goThread(page-1);
-                                countPost(response, 'quote', prev);
-                            }
-                        }
+                        await countPost(response, 'quote', 6);
                     }
                 });
             }
@@ -151,16 +144,48 @@
             style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
         }
 
-        function countPost(doc, reptype, count) {
+        async function countPost(doc, reptype, count, thresh) {
+            let prev = countPostAux(doc, reptype, count, thresh);
+            if (prev) {
+                let page = getPage(doc);
+                if (page > 1) {
+                    doc = await goThread(page-1);;
+                    switch (reptype) {
+                        case 'thread':
+                            thresh = prev;
+                            break;
+                        case 'quote':
+                            count = prev;
+                            break;
+                    }
+                    countPostAux(doc, reptype, count, thresh);
+                }
+            }
+        }
+
+        function countPostAux(doc, reptype, count, thresh) {
+            if (!thresh) thresh = count;
             let first = 0;
-            let postauth = getPostAuth(doc, true);
-            if (postauth[0].search.match(/(?<=&page=)\d+/) == 1) first = 1;
+            let posts = getPosts(doc);
+            if (getPage(doc) == 1) first = 1;
             let pattern = /&authorid=(\d+)/, postuid;
-            for (let i = postauth.length-1; count > 0 && i >= first; i--) {
-                if ((postuid=postauth[i].search.match(pattern)) != null) {
+            for (let i = posts.length-1; count > 0 && i >= first; i--) {
+                thresh--;
+                let postauth = getPostAuth(posts[i], false);
+                if ((postuid=postauth.search.match(pattern)) != null) {
                     if (postuid[1] == discuz_uid) {
+                        if (reptype == 'thread') {
+                            if (thresh > 0) {
+                                let quote = posts[i].querySelector('.quote');
+                                if (quote && quote.textContent.match(/^.*? \d+?-\d+?-\d+? \d+?:\d+?\n/) != null) {
+                                    continue;
+                                }
+                            }else {
+                                reptype = 'quote';
+                            }
+                        }
                         count--;
-                    } else return;
+                    }else return;
                 }
             }
             if (count == 0) {
@@ -175,7 +200,7 @@
                 hideWindow('reply');
                 return;
             }
-            return count;
+            return thresh > count ? thresh : count;
         }
 
         function getPage(doc) {
@@ -184,7 +209,12 @@
             if ((page=postauth.search.match(pattern)) != null) return page[1];
         }
 
-        function getPostAuth(doc, all) {
+        function getPosts(doc, all=true) {
+            if (all) return doc.querySelectorAll('table[id^="pid"]');
+            else return doc.querySelector('table[id^="pid"]');
+        }
+
+        function getPostAuth(doc, all=true) {
             if (all) return doc.querySelectorAll('a[rel="nofollow"]');
             else return doc.querySelector('a[rel="nofollow"]');
         }
@@ -227,9 +257,9 @@
         locale = navigator.language;
         if (locale.startsWith('en')) {
             locale = en;
-        } else if (locale == 'zh-HK' || locale == 'zh-TW') {
+        }else if (locale == 'zh-HK' || locale == 'zh-TW') {
             locale = hant;
-        } else {
+        }else {
             locale = hans;
         }
 
