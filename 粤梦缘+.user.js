@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         飄粵社+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      3.0.3
+// @version      3.0.4
 // @description  粵水粵掂
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -120,7 +120,7 @@
             for (let i = 0; i < repbtns.length; i++) {
                 repbtns[i].addEventListener('click', async () => {
                     let response = await goThread(Number.MAX_SAFE_INTEGER);
-                    await countPost(response, 'thread', 1, 6);
+                    countPost(response, 'thread', 1, 6);
                 });
             }
 
@@ -129,9 +129,9 @@
                 repqbtns[i].addEventListener('click', async () => {
                     let response = await goThread(Number.MAX_SAFE_INTEGER);
                     if (i == 0 && currpage == 1) {
-                        await countPost(response, 'thread', 1, 6);
+                        countPost(response, 'thread', 1, 6);
                     }else {
-                        await countPost(response, 'quote', 6);
+                        countPost(response, 'quote', 6);
                     }
                 });
             }
