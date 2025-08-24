@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         飄粵社+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      3.0.4
+// @version      3.0.5
 // @description  粵水粵掂
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -22,9 +22,19 @@
     const DOMAIN_ALIAS = `(?:dotmu\\.net|deainx\\.net|deainx\\.me|dranime\\.net)`;
 
     onload = () => {
-        var checkInterval = setInterval(() => {
+        const checkBodyInterval = setInterval(() => {
+            if (document.body && document.body.id == 'space') {
+                clearInterval(checkBodyInterval);
+                let style = document.querySelector('style');
+                let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
+                let regex = new RegExp(pattern, "g");
+                style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
+            }
+        }, 500);
+
+        const checkHashInterval = setInterval(() => {
             if (location.hash) {
-                clearInterval(checkInterval);
+                clearInterval(checkHashInterval);
 
                 if (history.scrollRestoration) {
                     history.scrollRestoration = 'manual';
@@ -55,8 +65,9 @@
             }
         }, 500);
 
-        var checkTimeout = setTimeout(() => {
-            clearInterval(checkInterval);
+        const checkTimeout = setTimeout(() => {
+            clearInterval(checkBodyInterval);
+            clearInterval(checkHashInterval);
 
             let imgs = document.querySelectorAll('img');
             let pattern = `^(?:https?://.*?\\.${DOMAIN_ALIAS}/)?data/attachment/`;
@@ -83,7 +94,7 @@
         document.addEventListener('click', (event) => {
             let link = event.target.closest('a');
             let pattern = /(www\.deainx\.net|www\.deainx\.me|bbs\.deainx\.me)/, old;
-            if (link && (old=link.hostname.match(pattern)) != null) {
+            if (link && (old=link.hostname.match(pattern))) {
                 event.preventDefault();
                 let newlink = link.href.replace(old[1], location.hostname);
                 open(newlink);
@@ -137,13 +148,6 @@
             }
         }
 
-        if (document.body.id == 'space') {
-            let style = document.querySelector('style');
-            let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
-            let regex = new RegExp(pattern, "g");
-            style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
-        }
-
         async function countPost(doc, reptype, count, thresh) {
             let prev = countPostAux(doc, reptype, count, thresh);
             if (prev) {
@@ -172,12 +176,12 @@
             for (let i = posts.length-1; count > 0 && i >= first; i--) {
                 thresh--;
                 let postauth = getPostAuth(posts[i], false);
-                if ((postuid=postauth.search.match(pattern)) != null) {
+                if ((postuid=postauth.search.match(pattern))) {
                     if (postuid[1] == discuz_uid) {
                         if (reptype == 'thread') {
                             if (thresh > 0) {
                                 let quote = posts[i].querySelector('.quote');
-                                if (quote && quote.textContent.match(/^.*? \d+?-\d+?-\d+? \d+?:\d+?\n/) != null) {
+                                if (quote && quote.textContent.match(/^[^ ]+? 发表于 \d+?-\d+?-\d+? \d+?:\d+?\n/)) {
                                     continue;
                                 }
                             }else {
@@ -206,7 +210,7 @@
         function getPage(doc) {
             let postauth = getPostAuth(doc, false);
             let pattern = /&page=(\d+)/, page;
-            if ((page=postauth.search.match(pattern)) != null) return page[1];
+            if ((page=postauth.search.match(pattern))) return page[1];
         }
 
         function getPosts(doc, all=true) {
