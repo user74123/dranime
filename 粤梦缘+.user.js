@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         飄粵社+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      3.0.5
+// @version      3.1.0
 // @description  粵水粵掂
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -20,25 +20,19 @@
     'use strict';
 
     const DOMAIN_ALIAS = `(?:dotmu\\.net|deainx\\.net|deainx\\.me|dranime\\.net)`;
+    var locale;
 
-    onload = () => {
-        const checkBodyInterval = setInterval(() => {
-            if (document.body && document.body.id == 'space') {
-                clearInterval(checkBodyInterval);
-                let style = document.querySelector('style');
-                let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
-                let regex = new RegExp(pattern, "g");
-                style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
-            }
-        }, 500);
+    init();
+    if (document.readyState == 'loading') {
+        document.addEventListener('DOMContentLoaded', main);
+    }else {
+        main();
+    }
 
-        const checkHashInterval = setInterval(() => {
-            if (location.hash) {
-                clearInterval(checkHashInterval);
-
-                if (history.scrollRestoration) {
-                    history.scrollRestoration = 'manual';
-                }
+    function main() {
+        if (location.hash) {
+            setTimeout(() => {
+                history.scrollRestoration = 'manual';
 
                 let hashId = location.hash.slice(1);
                 let elemById = document.getElementById(hashId);
@@ -62,34 +56,27 @@
                 }else if (elemByName) {
                     elemByName.scrollIntoView();
                 }
-            }
-        }, 500);
+            }, 500);
+        }
 
-        const checkTimeout = setTimeout(() => {
-            clearInterval(checkBodyInterval);
-            clearInterval(checkHashInterval);
-
-            let imgs = document.querySelectorAll('img');
+        setTimeout(() => {
+            let aimgs = document.querySelectorAll('img[id^="aimg_"]');
             let pattern = `^(?:https?://.*?\\.${DOMAIN_ALIAS}/)?data/attachment/`;
             let regex = new RegExp(pattern);
-            imgs.forEach((img) => {
+            aimgs.forEach((img) => {
                 let ori = img.getAttribute('original');
                 let src = img.getAttribute('file');
-                if (!src) {
-                    if (ori) src = ori;
-                    else src = img.src;
-                }
-                let old = false;
-                if (src.match(regex)) {
+                if (!src) src = ori ? ori : img.src;
+                let old;
+                if ((old = src.match(regex))) {
                     src = src.replace(regex, 'https://img.dranime.net/');
-                    old = true;
                 }
                 if (old || ori && ori != src) {
                     if (ori) img.setAttribute('original', src);
                     img.src = src;
                 }
             });
-        }, 3000);
+        }, 1);
 
         document.addEventListener('click', (event) => {
             let link = event.target.closest('a');
@@ -100,6 +87,13 @@
                 open(newlink);
             }
         });
+
+        if (document.body.id == 'space') {
+            let style = document.querySelector('style');
+            let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
+            let regex = new RegExp(pattern, "g");
+            style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
+        }
 
         if (location.search.startsWith('?mod=space&do=notice')) {
             let parent = document.getElementsByClassName('bm bw0')[0];
@@ -169,10 +163,11 @@
 
         function countPostAux(doc, reptype, count, thresh) {
             if (!thresh) thresh = count;
-            let first = 0;
+
             let posts = getPosts(doc);
-            if (getPage(doc) == 1) first = 1;
+            let first = getPage(doc) == 1 ? 1 : 0;
             let pattern = /&authorid=(\d+)/, postuid;
+
             for (let i = posts.length-1; count > 0 && i >= first; i--) {
                 thresh--;
                 let postauth = getPostAuth(posts[i], false);
@@ -181,7 +176,7 @@
                         if (reptype == 'thread') {
                             if (thresh > 0) {
                                 let quote = posts[i].querySelector('.quote');
-                                if (quote && quote.textContent.match(/^[^ ]+? 发表于 \d+?-\d+?-\d+? \d+?:\d+?\n/)) {
+                                if (quote && quote.textContent.match(/^[^ ]+? 发表于 \d+-\d+-\d+ \d+:\d+\n/)) {
                                     continue;
                                 }
                             }else {
@@ -237,8 +232,6 @@
         }
     }
 
-    init();
-    var locale;
     async function init() {
         await redirect();
 
