@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         飄粵社+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      3.1.0
+// @version      3.1.1
 // @description  粵水粵掂
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -176,7 +176,7 @@
                         if (reptype == 'thread') {
                             if (thresh > 0) {
                                 let quote = posts[i].querySelector('.quote');
-                                if (quote && quote.textContent.match(/^[^ ]+? 发表于 \d+-\d+-\d+ \d+:\d+\n/)) {
+                                if (quote && quote.textContent.match(/^[^ ]+? 发表于 \d+-\d+-\d+ \d+:\d+\n?/)) {
                                     continue;
                                 }
                             }else {
