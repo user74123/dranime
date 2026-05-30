@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         飄粵社+
 // @namespace    https://www.dranime.net/thread-98025-1-1.html
-// @version      3.1.2
+// @version      3.1.3
 // @description  粵水粵掂
 // @match        https://www.dranime.net/*
 // @match        https://www.dotmu.net/*
@@ -19,7 +19,6 @@
 (function() {
     'use strict';
 
-    const DOMAIN_ALIAS = `(?:dotmu\\.net|deainx\\.net|deainx\\.me|dranime\\.net)`;
     var locale;
 
     init();
@@ -30,6 +29,9 @@
     }
 
     function main() {
+        const DOMAIN_ALIAS = `(?:dotmu\\.net|deainx\\.net|deainx\\.me|dranime\\.net)`;
+        const OLD_IMG_HEAD = `(?:https?://(?:.*\\.)?${DOMAIN_ALIAS}/)?data/attachment/`;
+
         if (location.hash) {
             setTimeout(() => {
                 history.scrollRestoration = 'manual';
@@ -60,16 +62,15 @@
         }
 
         setTimeout(() => {
-            let aimgs = document.querySelectorAll('img[id^="aimg_"]');
-            let pattern = `^(?:https?://.*?\\.${DOMAIN_ALIAS}/)?data/attachment/`;
-            let regex = new RegExp(pattern);
-            aimgs.forEach((img) => {
+            let imgs = document.querySelectorAll('img');
+            let pattern = new RegExp(OLD_IMG_HEAD);
+            imgs.forEach((img) => {
                 let ori = img.getAttribute('original');
                 let src = img.getAttribute('file');
                 if (!src) src = ori ? ori : img.src;
                 let old;
-                if ((old = src.match(regex))) {
-                    src = src.replace(regex, 'https://img.dranime.net/');
+                if ((old = src.match(pattern))) {
+                    src = src.replace(pattern, 'https://img.dranime.net/');
                 }
                 if (old || ori && ori != src) {
                     if (ori) img.setAttribute('original', src);
@@ -80,19 +81,30 @@
 
         document.addEventListener('click', (event) => {
             let link = event.target.closest('a');
-            let pattern = /(www\.deainx\.net|www\.deainx\.me|bbs\.deainx\.me)/, old;
-            if (link && (old=link.hostname.match(pattern))) {
-                event.preventDefault();
-                let newlink = link.href.replace(old[1], location.hostname);
-                open(newlink);
+            if (link) {
+                let newlink = link.href;
+
+                let pattern = /(www\.deainx\.net|www\.deainx\.me|bbs\.deainx\.me)/, old;
+                if ((old = link.hostname.match(pattern))) {
+                    newlink = newlink.replace(old[1], location.hostname);
+                }
+
+                pattern = new RegExp(OLD_IMG_HEAD);
+                if (newlink.match(pattern)) {
+                    newlink = newlink.replace(pattern, 'https://img.dranime.net/');
+                }
+
+                if (newlink !== link.href) {
+                    event.preventDefault();
+                    open(newlink);
+                }
             }
         });
 
         if (document.body.id == 'space') {
             let style = document.querySelector('style');
-            let pattern = `url\\('(?:https?://.+?\\.${DOMAIN_ALIAS}/)?data/attachment/(.+?)'\\)`;
-            let regex = new RegExp(pattern, "g");
-            style.innerText = style.innerText.replace(regex, 'url(\'https://img.dranime.net/$1\')');
+            let pattern = new RegExp(`url\\('${OLD_IMG_HEAD}(.+?)'\\)`, "g");
+            style.innerText = style.innerText.replace(pattern, 'url(\'https://img.dranime.net/$1\')');
         }
 
         if (location.search.startsWith('?mod=space&do=notice')) {
